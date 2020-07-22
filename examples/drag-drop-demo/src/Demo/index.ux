@@ -1,0 +1,261 @@
+<import name="iconnode" src="./comps/iconnode/index.ux"></import>
+
+<template>
+  <div class="deskview">
+    <div class="deskslide">
+      <div class="iconnode-container" for="{{deskModel.slideList[0].iconnodeList}}" tid="uuid" id="iconnode-container-pos{{$idx}}">
+        <block if="$item.type === 0">
+          <text>占位</text>
+        </block>
+        <block elif="$item.type === 1">
+          <iconnode id="iconnode{{$item.uuid}}" core-data="{{$item}}"></iconnode>
+        </block>
+        <block elif="$item.type === 2">
+          <iconnode id="iconnode{{$item.uuid}}" core-data="{{$item}}"></iconnode>
+        </block>
+      </div>
+    </div>
+
+    <div class="desk-debug-view" if="{{showDebugView}}">
+      <text>触摸事件：</text>
+      <text> {{touchData.touchMove && touchData.touchMove.left}}</text>
+      <text> {{touchData.touches && touchData.touches[0].clientX}}</text>
+      <text> {{touchData.touches && touchData.touches[0].offsetX}}</text>
+
+      <text>检查边界：</text>
+      <text>{{touchCheck.checkXDesc}}</text>
+      <text>{{touchCheck.checkYDesc}}</text>
+      <text>{{touchCheck.checkResult}}</text>
+    </div>
+  </div>
+</template>
+
+<script>
+
+  const IconnodeType = {
+    NUL: 0,
+    APP: 1,
+    DIR: 2
+  }
+
+  export default {
+    private: {
+      showDebugView: false,
+      deskModel: {
+        slideList: [
+          {
+            iconnodeList: []
+          }
+        ]
+      },
+      touchData: {},
+      touchCheck: {
+        checkXDesc: '',
+        checkYDesc: '',
+        checkResult: ''
+      }
+    },
+    onInit () {
+      // 获取列表
+      const iconnodeList = this.deskModel.slideList[0].iconnodeList
+      iconnodeList.push(
+        {
+          type: 1,
+          uuid: `app01`,
+          name: `应用 1`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app02`,
+          name: `应用 2`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app03`,
+          name: `应用 3`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app04`,
+          name: `应用 4`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app05`,
+          name: `应用 5`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app06`,
+          name: `应用 6`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app07`,
+          name: `应用 7`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app08`,
+          name: `应用 8`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app09`,
+          name: `应用 9`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app10`,
+          name: `应用 10`,
+          icon: '/Common/icons/appdemo.png'
+        },
+        {
+          type: 1,
+          uuid: `app11`,
+          name: `应用 11`,
+          icon: '/Common/icons/appdemo.png'
+        }
+      )
+
+    },
+
+    async requestBorderCheck (dragElement, evtType) {
+      console.info(`请求边界检查`)
+
+      const dropElement = this.$element('iconnode-container-pos7')
+
+      const dropElementRectPromise = new Promise((res, rej) => {
+        dropElement.getBoundingClientRect({
+          success (data) {
+            res(data)
+          },
+          fail () {
+            rej()
+          }
+        })
+      })
+
+      const dragElementRectPromise = new Promise((res, rej) => {
+        dragElement.getBoundingClientRect({
+          success (data) {
+            res(data)
+          },
+          fail () {
+            rej()
+          }
+        })
+      })
+
+
+      console.info(`获取两个元素的实时位置Drop：`, dragElementRectPromise)
+
+      const dropElementRect = await dropElementRectPromise
+      const dragElementRect = await dragElementRectPromise
+
+      console.info(`获取两个元素的实时位置Drop：`, dropElementRect)
+      console.info(`获取两个元素的实时位置Drag：`, dragElementRect)
+
+      // 如果高于元素
+      if (dragElementRect.top < dropElementRect.bottom) {
+        this.touchCheck.checkYDesc = `顶部高于底部`
+
+        // 放在元素上
+        if (dragElementRect.right > dropElementRect.left) {
+          this.touchCheck.checkXDesc = `右部右于左部`
+
+          const dropElementRectXMiddle = dropElementRect.left + dropElementRect.width / 2
+
+          if (dragElementRect.right < dropElementRectXMiddle) {
+            // 不超过宽度一半：插入新元素
+            this.touchCheck.checkResult = `不超过宽度一半`
+
+            // 根据节点类型决策
+            const iconnodeItem = this.deskModel.slideList[0].iconnodeList[7]
+            if (iconnodeItem.type === 0) {
+              // 如果是NUL
+            }
+            else if (iconnodeItem.type === 1) {
+              // 如果是APP：插入空节点
+              const iconnodeList = this.deskModel.slideList[0].iconnodeList
+              iconnodeList.splice(7, 0, {
+                type: 0
+              })
+            }
+            else if (iconnodeItem.type === 2) {
+              // 如果是文件夹：展示文件夹
+
+            }
+            else {
+            }
+          }
+          else {
+            // 超过宽度一半：创建文件夹
+            this.touchCheck.checkResult = `超过宽度一半`
+
+            // 根据节点类型决策
+            const iconnodeItem = this.deskModel.slideList[0].iconnodeList[7]
+            if (iconnodeItem.type === 0) {
+              // 如果是NUL
+            }
+            else if (iconnodeItem.type === 1) {
+              // 如果是APP：创建文件夹
+              const iconnodeList = this.deskModel.slideList[0].iconnodeList
+              iconnodeList.splice(7, 1, {
+                type: 2,
+                name: '文件夹',
+                icon: '/Common/icons/dirdemo.png'
+              })
+            }
+            else if (iconnodeItem.type === 2) {
+              // 如果是文件夹：展示文件夹
+
+            }
+            else {
+            }
+          }
+        }
+      }
+      else {
+        //
+        this.touchCheck.checkResult = `没有重叠`
+
+        // 根据节点类型决策
+        const iconnodeItem = this.deskModel.slideList[0].iconnodeList[7]
+        if (iconnodeItem.type === 0) {
+          // 如果是NUL：删除空节点
+          this.deskModel.slideList[0].iconnodeList.splice(7, 1)
+        }
+        else if (iconnodeItem.type === 2) {
+          // 如果是文件夹：删除还原
+          this.deskModel.slideList[0].iconnodeList.splice(7, 1, {
+            type: 1,
+            uuid: `app08`,
+            name: `应用 8`,
+            icon: '/Common/icons/appdemo.png'
+          })
+        }
+      }
+
+      if (evtType === 'END') {
+        // 恢复位置
+        this.$broadcast('resetFixedPos')
+      }
+
+      console.info(`边界检查结果：${JSON.stringify(this.touchCheck)}`)
+      this.$forceUpdate()
+    }
+  }
+</script>
+
+<style lang="less" src="./index.less">
+</style>

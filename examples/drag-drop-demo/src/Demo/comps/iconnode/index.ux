@@ -1,0 +1,107 @@
+<template>
+  <div id="elRoot" class="iconnode-root {{touchMove.classname}}"
+       @touchstart="onNodeTouchStart" @touchmove="onNodeTouchMove" @touchend="onNodeTouchEnd"
+       style="position: {{touchMove.position}}; left: {{touchMove.left + 'px'}}; top: {{touchMove.top + 'px'}};">
+    <image class="iconnode-icon" src="{{ coreData.icon }}"></image>
+    <text class="iconnode-name">{{ coreData.name }}</text>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: [
+      'coreData'
+    ],
+    data () {
+      return {
+        touchMove: {
+          classname: '',
+          position: '',
+          left: 0,
+          top: 0,
+          startLeftDis: 0,
+          startTopDis: 0
+        }
+      }
+    },
+    onNodeTouchStart (evt) {
+      const { touches } = evt
+
+      const rootElement = this.$element()
+
+      // 缩小恢复
+      rootElement.animate([
+        {
+          time: 50,
+          transform: '{ scaleX: 0.8, scaleY: 0.8 }'
+        },
+        {
+          time: 100,
+          transform: '{ scaleX: 1, scaleY: 1 }'
+        }
+      ]).play()
+      this.$forceUpdate()
+
+      // 记录刚开始Touch时的边距
+      const touchItem = touches[0]
+      this.touchMove.startLeftDis = touchItem.offsetX
+      this.touchMove.startTopDis = touchItem.offsetY
+
+      this.debugTouch(evt)
+    },
+    onNodeTouchMove (evt) {
+      const { touches, changedTouches } = evt
+
+      const touchItem = touches[0]
+      const absMoveLeft = touchItem.clientX - this.touchMove.startLeftDis
+      const absMoveTop = touchItem.clientY - this.touchMove.startTopDis
+
+      this.touchMove.classname = 'iconnode-move'
+      this.touchMove.position = 'fixed'
+      this.touchMove.left = absMoveLeft
+      this.touchMove.top = absMoveTop
+      this.$forceUpdate()
+
+      const rootElement = this.$element()
+
+      // 请求检查边界
+      this.requestBorderCheck(rootElement, 'MOVE')
+
+      this.debugTouch(evt)
+    },
+    onNodeTouchEnd (evt) {
+      const rootElement = this.$element()
+
+      this.$root().requestBorderCheck(rootElement, 'END')
+    },
+    requestBorderCheck (rootElement) {
+      if (this.hasRequested) {
+        return
+      }
+
+      setTimeout(() => {
+        this.hasRequested = false
+        this.$root().requestBorderCheck(rootElement)
+      }, 1e3)
+      this.hasRequested = true
+    },
+    debugTouch (evt) {
+      const { touches, changedTouches } = evt
+
+      this.$root().touchData = {
+        touchMove: this.touchMove,
+        touches, changedTouches
+      }
+    },
+    events: {
+      resetFixedPos () {
+        this.touchMove.position = ''
+        this.touchMove.left = 0
+        this.touchMove.top = 0
+      }
+    }
+  }
+</script>
+
+<style lang="less" src="./index.less">
+</style>
