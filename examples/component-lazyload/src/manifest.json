@@ -1,6 +1,6 @@
 {
   "package": "com.application.demo",
-  "name": "responsive-simple-demo",
+  "name": "component-lazyload",
   "versionName": "1.0.0",
   "versionCode": "1",
   "minPlatformVersion": "1020",
@@ -8,23 +8,21 @@
   "features": [
     { "name": "system.prompt" },
     { "name": "system.router" },
-    { "name": "system.shortcut" },
-    { "name": "system.fetch" }
+    { "name": "system.shortcut" }
   ],
   "permissions": [
     { "origin": "*" }
   ],
   "config": {
-    "designWidth": 750,
     "logLevel": "log"
   },
   "router": {
-    "entry": "Tabs/landscape",
+    "entry": "Demo",
     "pages": {
-      "Tabs/portrait": {
+      "Demo": {
         "component": "index"
       },
-      "Tabs/landscape": {
+      "Demo2": {
         "component": "index"
       }
     }
@@ -32,16 +30,15 @@
   "display": {
     "titleBarBackgroundColor": "#f2f2f2",
     "titleBarTextColor": "#414141",
-    "titleBar": false,
     "menu": true,
     "pages": {
-      "Tabs/portrait": {
-        "titleBarText": "Tabs页签横竖屏适配示例",
-        "orientation": "portrait"
+      "Demo": {
+        "titleBarText": "示例页",
+        "menu": false
       },
-      "Tabs/landscape": {
-        "titleBarText": "Tabs页签横竖屏适配示例",
-        "orientation": "landscape"
+      "Demo": {
+        "titleBarText": "示例页2",
+        "menu": false
       }
     }
   }
