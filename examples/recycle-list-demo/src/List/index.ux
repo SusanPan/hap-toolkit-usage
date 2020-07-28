@@ -1,0 +1,75 @@
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="demo-page">
+    <list class="list">
+      <list-item class="item" for="{{partListData}}" onresize="onItemResize">
+        <div class="index">
+          <text>{{$idx}}</text>
+        </div>
+        <div class="item-left">
+          <image src="{{$item.picture}}"></image>
+        </div>
+        <div class="item-right">
+          <text>{{$item.name}}</text>
+          <text>{{$item.price}}</text>
+        </div>
+      </list-item>
+    </list>
+    <div class="title">
+      <text>list组件实现</text>
+    </div>
+  </div>
+</template>
+<script>
+import router from '@system.router'
+import { getMenuList } from '../data/index'
+
+const fullListData = getMenuList()
+
+export default {
+  private: {
+    partListData: fullListData
+  }
+}
+</script>
+
+<style>
+  .demo-page {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  .list{
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+  }
+  .item {
+    padding: 10px;
+    left:0;
+    /*position: absolute;*/
+  }
+  .item .index{
+    width: 60px;
+  }
+  .item .item-left image {
+    height: 130px;
+    width: 130px;
+  }
+  .item .item-right {
+    padding: 20px;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .title {
+    height: 130px;
+    justify-content: center;
+    background-color: #EEEEEE;
+  }
+  .title text{
+    font-size: 40px;
+  }
+</style>

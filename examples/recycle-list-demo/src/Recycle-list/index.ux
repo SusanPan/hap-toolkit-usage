@@ -1,0 +1,189 @@
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="demo-page">
+    <div class="list" ontouchmove="onMove" ontouchstart="onStart" ontouchend="onTouchEnd" onresize="onViewResize">
+      <div style="top:{{ getItemTop($item) }}px" class="item" for="{{partListData}}" onresize="onItemResize">
+        <div class="index">
+          <text>{{$item.dataIndex}} -- {{$item.index}}</text>
+        </div>
+        <div class="item-left">
+          <image src="{{$item.picture}}"></image>
+        </div>
+        <div class="item-right">
+          <text>{{$item.name}}</text>
+          <text>{{$item.price}}</text>
+        </div>
+      </div>
+    </div>
+    <div class="title">
+      <text>recycle list bottom</text>
+    </div>
+  </div>
+</template>
+<script>
+import router from '@system.router'
+import { getMenuList } from '../data/index'
+import { loopInertiaMove } from './index'
+
+const fullListData = getMenuList()
+
+let length = 9 // 渲染的item个数
+
+let nextDataIndex = length // 列表中下一个数据指向
+let lastClientY = 0 // 记录上次滑到Y轴位置
+let lastMoveTime = 0 // 上次滑动时间
+let speed = 0 // 记录滑动速度
+
+function getLastTop(listOffsetY, itemHeight) {
+  return (length - 1) * itemHeight + listOffsetY
+}
+
+export default {
+  private: {
+    partListData: [],
+    listOffsetY: 0, // 展示列表元素距离父节点上边框的位移
+    itemHeight: 0, // 每个item高度
+    viewHeight: 0 // 可见list窗口高度
+  },
+  async onReady(){
+    this.partListData = fullListData.slice(0, length).map((data, index) => {
+      const item = Object.assign({}, data)
+      // 展示顺序的index
+      item.index = index
+      // 展示元素在数据中的index
+      item.dataIndex = index
+      return item
+    })
+  },
+  onViewResize(params){
+    const { offsetHeight } = params
+    this.viewHeight = offsetHeight
+  },
+  onItemResize(params){
+    const { offsetHeight } = params
+    this.itemHeight = offsetHeight
+  },
+  getItemTop(item){
+    return item.index * this.itemHeight + this.listOffsetY
+  },
+  onStart(event){
+    const { touches } = event
+    // 记录初始触屏距离可见区域上边沿的 Y 轴坐标
+    lastClientY = touches[0].clientY
+    lastMoveTime = Date.now()
+  },
+  onMove(event){
+    const { touches } = event
+
+    // 计算滑动Y轴距离
+    const scrollY = touches[0].clientY - lastClientY
+
+    // 计算速度
+    const now = Date.now()
+    speed = (touches[0].clientY - lastClientY) / (now - lastMoveTime)
+
+    lastClientY = touches[0].clientY
+    lastMoveTime = now
+
+    this.handleScroll(scrollY)
+  },
+  onTouchEnd(){
+    const a = 0.008, t = 5
+    loopInertiaMove(speed, a, t, this.handleScroll.bind(this))
+  },
+  handleScroll(scrollY){
+    const viewList = this.partListData
+    this.listOffsetY = this.listOffsetY + scrollY
+    if(scrollY < 0){
+      // 手指向上滑动
+
+      // 最后一个视图item是否完全展现时的OffsetY
+      const minOffsetY = this.viewHeight - this.itemHeight * length
+      // 如果展示item的最后一个为数据的最后一个，并且最后一个视图item完全展现, 不能滑动
+      if(nextDataIndex === fullListData.length && this.listOffsetY <= minOffsetY) {
+        this.listOffsetY = minOffsetY
+        return
+      }
+      // 第一个元素隐藏, 第一个item移到最后，其他所有item位置减1
+      while(this.listOffsetY < - this.itemHeight && nextDataIndex !== fullListData.length){
+        this.listOffsetY = this.listOffsetY + this.itemHeight
+        viewList.forEach(item => {
+          if(item.index === 0) {
+            Object.assign(item, fullListData[nextDataIndex])
+            item.dataIndex = nextDataIndex
+            nextDataIndex ++
+            item.index = length - 1
+          } else {
+            item.index--
+          }
+        })
+      }
+    }
+    else if(scrollY > 0){
+      // 手指向下滑动
+
+      // 如果展示item的第1个为数据的第1个，第一个视图item是否完全展现, this.listOffsetY 为0时item完全展现
+      if(nextDataIndex === length && this.listOffsetY >= 0) {
+        this.listOffsetY = 0
+        return
+      }
+      // 最后一个元素隐藏时最后一个item移到第一个位置，其他所有item位置加1
+      while(getLastTop(this.listOffsetY, this.itemHeight) > this.viewHeight  && nextDataIndex > length){
+        const index = nextDataIndex - length - 1
+        this.listOffsetY = this.listOffsetY - this.itemHeight
+        for(let i = 0; i < viewList.length; i ++) {
+          const item = viewList[i]
+          if(item.index === length - 1) {
+            item.dataIndex = index
+            Object.assign(item, fullListData[item.dataIndex])
+            nextDataIndex --
+            item.index = 0
+          } else {
+            item.index++
+          }
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style>
+  .demo-page {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  .list{
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+  }
+  .item {
+    padding: 10px;
+    left:0;
+    position: absolute;
+  }
+  .item .index{
+    width: 120px;
+  }
+  .item .item-left image {
+    height: 130px;
+    width: 130px;
+  }
+  .item .item-right {
+    padding: 20px;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .title {
+    height: 130px;
+    justify-content: center;
+    background-color: #EEEEEE;
+  }
+
+  .title text{
+    font-size: 40px;
+  }
+</style>

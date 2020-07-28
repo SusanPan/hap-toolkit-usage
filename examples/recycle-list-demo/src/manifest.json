@@ -28,9 +28,15 @@
     "logLevel": "log"
   },
   "router": {
-    "entry": "Demo",
+    "entry": "Home",
     "pages": {
-      "Demo": {
+      "Home": {
+        "component": "index"
+      },
+      "Recycle-list": {
+        "component": "index"
+      },
+      "List": {
         "component": "index"
       }
     }
@@ -39,9 +45,18 @@
     "titleBarBackgroundColor": "#f2f2f2",
     "titleBarTextColor": "#414141",
     "menu": true,
+    "titleBar": true,
     "pages": {
-      "Demo": {
-        "titleBarText": "示例页",
+      "Home": {
+        "titleBarText": "recycle list demo",
+        "menu": false
+      },
+      "Recycle-list": {
+        "titleBarText": "recycle list demo",
+        "menu": false
+      },
+      "List": {
+        "titleBarText": "list组件实现",
         "menu": false
       }
     }

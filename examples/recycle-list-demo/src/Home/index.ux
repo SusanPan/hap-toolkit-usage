@@ -1,0 +1,28 @@
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="demo-page">
+    <div class="nav">
+      <div><a href="Recycle-list">Recycle-list实现</a></div>
+      <div><a href="List">List组件实现</a></div>
+    </div>
+  </div>
+</template>
+
+<style>
+   .demo-page {
+     flex-direction: column;
+   }
+   .nav {
+     flex-direction: column;
+     padding: 30px;
+     align-items: center;
+   }
+   .nav div {
+     margin: 50px;
+   }
+    .nav a{
+      background-color: cadetblue;
+      padding: 30px;
+      width: 300px;
+    }
+</style>
