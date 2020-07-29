@@ -1,8 +1,11 @@
 <template>
   <!-- template里只能有一个根节点 -->
   <div class="demo-page">
+    <div class="title">
+      <text>list top</text>
+    </div>
     <list class="list">
-      <list-item class="item" for="{{partListData}}" onresize="onItemResize">
+      <list-item class="item" for="{{partListData}}" type="list-item" onresize="onItemResize">
         <div class="index">
           <text>{{$idx}}</text>
         </div>
@@ -16,7 +19,7 @@
       </list-item>
     </list>
     <div class="title">
-      <text>list组件实现</text>
+      <text>list bottom</text>
     </div>
   </div>
 </template>
@@ -33,43 +36,5 @@ export default {
 }
 </script>
 
-<style>
-  .demo-page {
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-  }
-
-  .list{
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-  }
-  .item {
-    padding: 10px;
-    left:0;
-    /*position: absolute;*/
-  }
-  .item .index{
-    width: 60px;
-  }
-  .item .item-left image {
-    height: 130px;
-    width: 130px;
-  }
-  .item .item-right {
-    padding: 20px;
-    flex-direction: column;
-    justify-content: space-around;
-  }
-
-  .title {
-    height: 130px;
-    justify-content: center;
-    background-color: #EEEEEE;
-  }
-  .title text{
-    font-size: 40px;
-  }
+<style lang="less" src="./index.less">
 </style>

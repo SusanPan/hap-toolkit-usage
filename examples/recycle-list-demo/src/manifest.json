@@ -5,9 +5,6 @@
   "versionCode": "1",
   "minPlatformVersion": "1020",
   "icon": "/Common/logo.png",
-  "deviceTypeList": [
-    "phone"
-  ],
   "features": [
     {
       "name": "system.prompt"
